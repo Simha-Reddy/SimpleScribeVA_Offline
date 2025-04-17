@@ -36,7 +36,7 @@ It allows clinicians to transcribe audio (dictations or patient visits) entirely
   ✅ *"Add Python to PATH"* (very important)
 
 ### Step 2: Prepare Folder in OneDrive
-- Copy the entire **SimpleScribeVA** folder to your **VA OneDrive > Desktop** folder  
+- Copy the entire **SimpleScribeVA** folder to your **VA OneDrive > Desktop**  
   - This ensures your transcripts and custom templates sync across devices
 
 ### Step 3: Download the transcription model
