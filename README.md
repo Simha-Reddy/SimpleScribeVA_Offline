@@ -40,7 +40,7 @@ It allows clinicians to record patient encounters, transcribe audio locally usin
   - This ensures your transcripts and custom templates sync across devices
 
 ### Step 3: Download the transcription model
-- Download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
+- Download the preferred model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
 
 ### Step 4: First-Time Setup
 - Double-click `Setup.bat` in the folder  
@@ -81,12 +81,12 @@ SimpleScribeVA/
 ├── run_local_server.py         # Flask app (backend)
 ├── monitor_transcription.py    # Whisper audio chunk processor
 ├── record_audio.py             # Mic recording logic
-├── chunks/                     # Audio files are saved here until transcribed, then deleted
+├── chunks/                     # Audio files are saved here until transcribed, then deleted. The folder will be created the first time you run SimpleScribeVA
 ├── static/                     # app.js which contains the various frontend javascript functions
 ├── templates/                  # html files for pages
 │   ├── default/                # Built-in prompt templates
 │   └── custom/                 # User-created templates
-├── transcripts/                # Saved transcripts by date
+├── transcripts/                # Saved transcripts by date. The folder will be created the first time you run SimpleScribeVA 
 ├── whispercpp/                 # Local Whisper binary + model
 ├── .env                        # Where API keys may eventually go
 ├── live_transcript.txt         # Where the live transcript is kept during a session
