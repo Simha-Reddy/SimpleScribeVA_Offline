@@ -1,0 +1,3 @@
+Create a detailed discharge summary based on the provided dictation and chart data.
+
+Include standard language that the note was partially created with use of AI summarization, and that I have fully reviewed the note before signing.

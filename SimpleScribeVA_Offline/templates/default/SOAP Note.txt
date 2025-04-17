@@ -1,0 +1,3 @@
+Please summarize the following clinical encounter in a SOAP note format.
+
+Include standard language indicating that verbal patient consent to be recorded was obtained. Also, that the note was partially created with use of AI summarization, and that I have fully reviewed the note before signing.

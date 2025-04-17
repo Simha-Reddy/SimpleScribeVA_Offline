@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SimpleScribeVA - Consent</title>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e5ecf3;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffffee;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px 40px;
+        }
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title {
+            font-size: 2.8em;
+            font-style: italic;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        a {
+            text-decoration: none;
+            color: #3498db;
+            font-size: 1.4em;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            border: 2px solid #2ecc71;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            background-color: white;
+            color: #2ecc71;
+            font-weight: 600;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        button:hover {
+            background-color: #2ecc71;
+            color: white;
+        }
+        button:active {
+            background-color: #27ae60;
+            border-color: #27ae60;
+        }
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #bbb;
+            background-color: #fefefe;
+            font-size: 1em;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+        }
+        .transcript {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f6f9fc;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .transcript-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <div class="header-title">SimpleScribeVA</div>
+        </div>
+        <h2>Before You Begin</h2>
+        <p>Please confirm that you have obtained <strong>verbal consent</strong> from the patient to transcribe this conversation and to generate a note using AI tools.</p>
+        <form action="/scribe" method="get">
+            <div style="margin-bottom: 12px;">
+				<label>
+					<input type="checkbox" id="consentCheckbox" required />
+					I confirm I have obtained verbal consent from the patient and anyone else being transcribed.
+				</label><br>
+				<label>
+			</div>
+			
+			<div style margin-bottom: 20px;">
+				<label>
+					<input type="checkbox" id="disclaimerCheckbox" required />
+					I understand that <strong>SimpleScribeVA</strong> is a prototype and does not guarantee transcription accuracy.
+					I am responsible for verifying and ensuring the accuracy of any documentation it helps produce.
+				</label><br>
+			</div>
+            <button type="submit">Continue to Scribe</button>
+        </form>
+    </div>
+</body>
+</html>
