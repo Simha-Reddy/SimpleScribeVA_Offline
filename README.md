@@ -27,22 +27,25 @@ It allows clinicians to record patient encounters, transcribe audio locally usin
 
 ## ♻ Installation & Setup (Windows)
 
-### Step 1: Prepare Folder in OneDrive
-- Copy the entire **SimpleScribeVA** folder to your **VA OneDrive > Desktop** folder  
-  - This ensures your transcripts and custom templates sync across devices
-
-### Step 2: Install Python 3.13
+### Step 1: Install Python 3.13 (if not already on your computer)
 - Go to: [https://www.python.org/downloads/](https://www.python.org/downloads/)
 - Download **Python 3.13 (64-bit)**
 - During installation, **check the box** that says:  
   ✅ *"Add Python to PATH"* (very important)
 
-### Step 3: First-Time Setup
+### Step 2: Prepare Folder in OneDrive
+- Copy the entire **SimpleScribeVA** folder to your **VA OneDrive > Desktop** folder  
+  - This ensures your transcripts and custom templates sync across devices
+
+### Step 3: Download the transcription model
+- Download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
+
+### Step 4: First-Time Setup
 - Double-click `Setup.bat` in the folder  
   - This creates a virtual environment and installs required packages  
   - May take a few minutes
 
-### Step 4: Daily Use
+### Step 5: Daily Use
 - After setup, launch the app anytime by double-clicking:  
   `StartSimpleScribeVA.bat`  
   (Consider making a shortcut to this on your desktop)
@@ -51,7 +54,7 @@ It allows clinicians to record patient encounters, transcribe audio locally usin
 - Click **"Verify and Continue"** on the landing page
 - Close the terminal/command prompt windows (black, text-filled boxes) to close the program fully
 
-> 💡 You can bookmark that local address (http://127.0.0.1:5000) for fast access as long as the app is running.
+> 💡 You can bookmark that local address (http://127.0.0.1:5000) for easy access, as long as the app is running.
 
 ---
 
