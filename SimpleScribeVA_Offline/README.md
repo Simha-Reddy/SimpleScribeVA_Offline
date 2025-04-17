@@ -6,6 +6,8 @@ It allows clinicians to record patient encounters, transcribe audio locally usin
 
 **This offline version does not require an OpenAI API key** — instead of generating notes automatically, users can copy a prompt of your choosing + transcript content (either a dictation or a patient visit) to paste into the **VA GPT Beta** interface.
 
+> ⚠️ This repository **does not include the Whisper model" you will need to actually transcribe, due to the large file size of the model. You will need to download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder of this program.
+
 > ⚠️ *AS OF THIS WRITING ON 4/16/25, THIS SOFTWARE IS NOT OFFICIALLY ENDORSED BY THE VA. IN ADDITION, PLEASE REVIEW THE INCLUDED LICENSE. IN PARTICULAR, THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*
 
 ---
@@ -27,22 +29,25 @@ It allows clinicians to record patient encounters, transcribe audio locally usin
 
 ## ♻ Installation & Setup (Windows)
 
-### Step 1: Prepare Folder in OneDrive
-- Copy the entire **SimpleScribeVA** folder to your **VA OneDrive > Desktop** folder  
-  - This ensures your transcripts and custom templates sync across devices
-
-### Step 2: Install Python 3.13
+### Step 1: Install Python 3.13 (if not already on your computer)
 - Go to: [https://www.python.org/downloads/](https://www.python.org/downloads/)
 - Download **Python 3.13 (64-bit)**
 - During installation, **check the box** that says:  
   ✅ *"Add Python to PATH"* (very important)
 
-### Step 3: First-Time Setup
+### Step 2: Prepare Folder in OneDrive
+- Copy the entire **SimpleScribeVA** folder to your **VA OneDrive > Desktop** folder  
+  - This ensures your transcripts and custom templates sync across devices
+
+### Step 3: Download the transcription model
+- Download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
+
+### Step 4: First-Time Setup
 - Double-click `Setup.bat` in the folder  
   - This creates a virtual environment and installs required packages  
   - May take a few minutes
 
-### Step 4: Daily Use
+### Step 5: Daily Use
 - After setup, launch the app anytime by double-clicking:  
   `StartSimpleScribeVA.bat`  
   (Consider making a shortcut to this on your desktop)
