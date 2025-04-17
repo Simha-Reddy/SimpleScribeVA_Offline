@@ -12,6 +12,15 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
+Name Usage Clarification:
+The names “SimpleScribe” and “SimpleScribeVA” are used in this repository solely
+to identify this open-source medical documentation tool and are unrelated to
+any existing products with similar names in other industries. This project is not
+affiliated with or endorsed by any companies or tools outside the healthcare or
+software domains. Derivative works may not use the names “SimpleScribe” or
+“SimpleScribeVA” in their own product or project branding, promotion, or advertising
+without explicit written permission from the author.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
