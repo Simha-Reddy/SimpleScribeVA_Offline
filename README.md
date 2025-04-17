@@ -1,6 +1,6 @@
 # SimpleScribeVA (Offline Version)
 
-**SimpleScribeVA** is a privacy-focused, offline-first virtual medical scribe tool. This version is intended for use with the secure LLM of your choosing, such as VA GPT beta.
+**SimpleScribeVA** is a privacy-focused, offline-first tool for virtual medical scribing. This version is intended for use with the secure LLM of your choosing, such as VA GPT beta.
 
 It allows clinicians to transcribe audio (dictations or patient visits) entirely on their computer using Whisper.cpp, and structure notes using prompt templates like SOAP or H&P.
 
