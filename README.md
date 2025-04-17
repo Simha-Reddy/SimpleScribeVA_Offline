@@ -2,7 +2,7 @@
 
 **SimpleScribeVA** is a privacy-respecting, offline-first virtual medical scribe tool. This version is intended for use with the secure LLM of your choosing, such as VA GPT beta.
 
-It allows clinicians to record patient encounters, transcribe audio locally using Whisper.cpp, and structure notes using prompt templates like SOAP or H&P.
+It allows clinicians to transcribe audio (dictations or patient visits) entirely on their computer using Whisper.cpp, and structure notes using prompt templates like SOAP or H&P.
 
 **This offline version does not require an OpenAI API key** — instead of generating notes automatically, users can copy a prompt of your choosing + transcript content (either a dictation or a patient visit) to paste into the **VA GPT Beta** interface.
 
