@@ -6,7 +6,7 @@ It allows clinicians to transcribe audio (dictations or patient visits) entirely
 
 **This offline version does not require an OpenAI API key** — instead of generating notes automatically, users can copy a prompt of your choosing + transcript content (either a dictation or a patient visit) to paste into the **VA GPT Beta** interface.
 
-> ⚠️ This repository **does not include the Whisper model** you will need to actually transcribe, due to the large file size of the model. You will need to download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder of this program.
+> ⚠️ This repository **does not include the Whisper model** you will need to actually transcribe, due to the large file size of the model. You will need to download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin and save it in the whispercpp folder of this program.
 >
 > > **However, release 1.0.0 does include the model and can be found at https://github.com/Simha-Reddy/SimpleScribeVA_Offline/releases/tag/v1.0.0**
 
@@ -43,7 +43,8 @@ It allows clinicians to transcribe audio (dictations or patient visits) entirely
   - This ensures your transcripts and custom templates sync across devices
 
 ### Step 3: Download the transcription model
-- Download the preferred model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
+- If you used the files from this repository, make sure to download the preferred model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
+- **Alternatively, just go to https://github.com/Simha-Reddy/SimpleScribeVA_Offline/releases/tag/v1.0.0 for a release with the model already included.**
 
 ### Step 4: First-Time Setup
 - Double-click `Setup.bat` in the folder  
