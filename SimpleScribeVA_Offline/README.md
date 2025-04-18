@@ -1,12 +1,13 @@
 # SimpleScribeVA (Offline Version)
 
-**SimpleScribeVA** is a privacy-respecting, offline-first virtual medical scribe tool. This version is intended for use with the secure LLM of your choosing, such as VA GPT beta.
+**SimpleScribeVA** is a privacy-focused, offline-first tool for virtual medical scribing. This version is intended for use with the secure LLM of your choosing, such as VA GPT beta.
 
-It allows clinicians to record patient encounters, transcribe audio locally using Whisper.cpp, and structure notes using prompt templates like SOAP or H&P.
+It allows clinicians to transcribe audio (dictations or patient visits) entirely on their computer using Whisper.cpp, and structure notes using prompt templates like SOAP or H&P.
 
 **This offline version does not require an OpenAI API key** — instead of generating notes automatically, users can copy a prompt of your choosing + transcript content (either a dictation or a patient visit) to paste into the **VA GPT Beta** interface.
 
-> ⚠️ This repository **does not include the Whisper model" you will need to actually transcribe, due to the large file size of the model. You will need to download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder of this program.
+> ⚠️ This repository **does not include the Whisper model** you will need to actually transcribe, due to the large file size of the model. You will need to download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder of this program.
+> **However, release 1.0.0 does include the model and can be found at https://github.com/Simha-Reddy/SimpleScribeVA_Offline/releases/tag/v1.0.0**
 
 > ⚠️ *AS OF THIS WRITING ON 4/16/25, THIS SOFTWARE IS NOT OFFICIALLY ENDORSED BY THE VA. IN ADDITION, PLEASE REVIEW THE INCLUDED LICENSE. IN PARTICULAR, THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*
 
@@ -36,11 +37,11 @@ It allows clinicians to record patient encounters, transcribe audio locally usin
   ✅ *"Add Python to PATH"* (very important)
 
 ### Step 2: Prepare Folder in OneDrive
-- Copy the entire **SimpleScribeVA** folder to your **VA OneDrive > Desktop** folder  
+- Copy the entire **SimpleScribeVA** folder to your **VA OneDrive > Desktop**  
   - This ensures your transcripts and custom templates sync across devices
 
 ### Step 3: Download the transcription model
-- Download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
+- Download the preferred model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
 
 ### Step 4: First-Time Setup
 - Double-click `Setup.bat` in the folder  
@@ -56,7 +57,7 @@ It allows clinicians to record patient encounters, transcribe audio locally usin
 - Click **"Verify and Continue"** on the landing page
 - Close the terminal/command prompt windows (black, text-filled boxes) to close the program fully
 
-> 💡 You can bookmark that local address (http://127.0.0.1:5000) for fast access as long as the app is running.
+> 💡 You can bookmark that local address (http://127.0.0.1:5000) for easy access, as long as the app is running.
 
 ---
 
@@ -81,12 +82,12 @@ SimpleScribeVA/
 ├── run_local_server.py         # Flask app (backend)
 ├── monitor_transcription.py    # Whisper audio chunk processor
 ├── record_audio.py             # Mic recording logic
-├── chunks/                     # Audio files are saved here until transcribed, then deleted
+├── chunks/                     # Audio files are saved here until transcribed, then deleted. The folder will be created the first time you run SimpleScribeVA
 ├── static/                     # app.js which contains the various frontend javascript functions
 ├── templates/                  # html files for pages
 │   ├── default/                # Built-in prompt templates
 │   └── custom/                 # User-created templates
-├── transcripts/                # Saved transcripts by date
+├── transcripts/                # Saved transcripts by date. The folder will be created the first time you run SimpleScribeVA 
 ├── whispercpp/                 # Local Whisper binary + model
 ├── .env                        # Where API keys may eventually go
 ├── live_transcript.txt         # Where the live transcript is kept during a session
