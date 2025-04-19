@@ -12,7 +12,8 @@ vosk_model = Model(VOSK_MODEL_PATH)
 CHUNK_DIR = "chunks"
 TRANSCRIPT_DIR = "transcripts"
 LIVE_TRANSCRIPT = "live_transcript.txt"
-  
+CONFIDENCE_THRESHOLD = 0.5  # ← tweakable
+
 def find_output_path(wav_path):
     path1 = wav_path.replace(".wav", ".txt")
     path2 = wav_path + ".txt"
@@ -34,7 +35,9 @@ def transcribe_chunk(wav_path, model=None):  # 'model' arg kept for compatibilit
         return None
 
     rec = KaldiRecognizer(vosk_model, wf.getframerate())
-    text = ""
+    rec.SetWords(True)  # ← enable word-level confidence
+
+    words = []
 
     while True:
         data = wf.readframes(4000)
@@ -42,10 +45,24 @@ def transcribe_chunk(wav_path, model=None):  # 'model' arg kept for compatibilit
             break
         if rec.AcceptWaveform(data):
             res = json.loads(rec.Result())
-            text += res.get("text", "") + " "
+            for wd in res.get("result", []):
+                conf = wd.get("conf", 1.0)
+                word = wd.get("word", "")
+                if conf < CONFIDENCE_THRESHOLD:
+                    words.append("[unclear]")
+                else:
+                    words.append(word)
 
     final_res = json.loads(rec.FinalResult())
-    text += final_res.get("text", "")
+    for wd in final_res.get("result", []):
+        conf = wd.get("conf", 1.0)
+        word = wd.get("word", "")
+        if conf < CONFIDENCE_THRESHOLD:
+            words.append("[unclear]")
+        else:
+            words.append(word)
+
+    text = " ".join(words)
 
     # Simulate Whisper-style .txt output
     output_path = wav_path + ".txt"
@@ -53,11 +70,11 @@ def transcribe_chunk(wav_path, model=None):  # 'model' arg kept for compatibilit
         f.write(text.strip())
 
     return output_path
- 
+
 def append_to_transcripts(text, patient_name):
     with open(LIVE_TRANSCRIPT, "a", encoding="utf-8") as f:
         f.write(text + "\n")
- 
+
 def monitor_chunks():
     os.makedirs(TRANSCRIPT_DIR, exist_ok=True)
     os.makedirs(CHUNK_DIR, exist_ok=True)
@@ -95,6 +112,6 @@ def monitor_chunks():
                     print(f"[FAIL] No transcript output for {fname}")
                 processed.add(fname)
         time.sleep(2)
- 
+
 if __name__ == "__main__":
     monitor_chunks()
