@@ -15,25 +15,72 @@ recording = False
 recording_thread = None
 q = queue.Queue()
  
-def get_device_id():
+def load_config():
     try:
         with open("config.json", "r") as f:
-            config = json.load(f)
-            return config.get("device_id", None)
-    except:
-        return None
- 
+            return json.load(f)
+    except Exception as e:
+        print(f"[WARN] Failed to load config.json: {e}")
+        return {}
+
+# Load config once
+config = load_config()
+NORMALIZE_GAIN = config.get("normalize_gain", True)
+TARGET_dBFS = config.get("target_dBFS", -20)
+
+# Right now, config has device_id set to null or default, but down the road consider letting user choose mic.
+def get_device_id():
+    return config.get("device_id", None)
+
+def normalize_to_dBFS(audio_array, target_dBFS=-20):
+    """
+    Normalize audio to a specific dBFS target.
+
+    Args:
+        audio_array (np.ndarray): Audio samples as int16
+        target_dBFS (float): Desired decibels relative to full scale (e.g., -20)
+
+    Returns:
+        np.ndarray: Gain-normalized int16 audio array
+    """
+    if np.max(np.abs(audio_array)) == 0:
+        return audio_array
+
+    float_audio = audio_array.astype(np.float32)
+    rms = np.sqrt(np.mean(float_audio**2))
+    current_dBFS = 20 * np.log10(rms / 32767)
+    required_gain_dB = target_dBFS - current_dBFS
+    gain = 10 ** (required_gain_dB / 20)
+    normalized_float = float_audio * gain
+    normalized_clipped = np.clip(normalized_float, -32768, 32767)
+    return normalized_clipped.astype(np.int16)
+
 def audio_callback(indata, frames, time_info, status):
     if status:
         print(status)
     q.put(indata.copy())
  
 def save_wav(frames, filename, samplerate):
+    """
+    Save recorded frames to a WAV file, applying gain normalization if enabled.
+
+    Args:
+        frames (List[bytes]): List of byte frames (from sounddevice)
+        filename (str): Output .wav file path
+        samplerate (int): Sample rate in Hz
+    """
+    audio_bytes = b''.join(frames)
+    audio_array = np.frombuffer(audio_bytes, dtype=np.int16)
+
+    if NORMALIZE_GAIN:
+        print(f"[NORMALIZING] Target dBFS: {TARGET_dBFS}")
+        audio_array = normalize_to_dBFS(audio_array, TARGET_dBFS)
+
     with wave.open(filename, 'wb') as wf:
         wf.setnchannels(1)
         wf.setsampwidth(2)
         wf.setframerate(samplerate)
-        wf.writeframes(b''.join(frames))
+        wf.writeframes(audio_array.tobytes())
  
 def start_recording():
     global recording
