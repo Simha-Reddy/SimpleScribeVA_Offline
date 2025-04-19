@@ -102,7 +102,7 @@ function createNote() {
     fetch("/create_note", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript, chart_data: chartData, prompt_type: prompt })
+        body: JSON.stringify({ prompt_type: prompt, chart_data: chartData, transcript})
     })
     .then(response => response.json())
     .then(data => {
@@ -142,16 +142,16 @@ function copyFullContent() {
     const transcript = document.getElementById("rawTranscript").value || "";
     const chartData = document.getElementById("chartData").value || "";
 
-    const full = `PROMPT:\n${prompt}\n\nTRANSCRIPT:\n${transcript}\n\nCHART DATA:\n${chartData}`;
+    const full = `PROMPT:\n${prompt}\n\nCHART DATA:\n${chartData}\n\nTRANSCRIPT:\n${transcript}`;
     navigator.clipboard.writeText(full).then(() => {
-        alert("Prompt, transcript, and chart data copied.");
+        alert("Prompt, chart data, and transcript copied to clipboard.");
     });
 }
 
 function copyTranscriptOnly() {
     const transcript = document.getElementById("rawTranscript").value || "";
     navigator.clipboard.writeText(transcript).then(() => {
-        alert("Transcript copied.");
+        alert("Transcript copied to clipboard.");
     });
 }
 
