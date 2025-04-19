@@ -1,1 +1,7 @@
-{"model": "ggml-small.en.bin"}
+{
+  "model": "ggml-small.en.bin",
+  "device_id": null,
+  "normalize_gain": true,
+  "target_dBFS": -20
+}
+
