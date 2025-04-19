@@ -13,6 +13,14 @@ CHUNK_DIR = "chunks"
 TRANSCRIPT_DIR = "transcripts"
 LIVE_TRANSCRIPT = "live_transcript.txt"
 CONFIDENCE_THRESHOLD = 0.5  # ← tweakable
+BIAS_PHRASES = load_bias_phrases("bias_phrases.txt")
+
+def load_bias_phrases(path="bias_phrases.txt"):
+    if not os.path.exists(path):
+        print(f"[WARN] No biasing file found at {path}")
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip()]
 
 def find_output_path(wav_path):
     path1 = wav_path.replace(".wav", ".txt")
@@ -34,7 +42,7 @@ def transcribe_chunk(wav_path, model=None):  # 'model' arg kept for compatibilit
         print(f"[ERROR] WAV file {wav_path} must be 16-bit mono PCM at 16kHz")
         return None
 
-    rec = KaldiRecognizer(vosk_model, wf.getframerate())
+    rec = KaldiRecognizer(vosk_model, wf.getframerate(), json.dumps(BIAS_PHRASES))
     rec.SetWords(True)  # ← enable word-level confidence
 
     words = []
