@@ -1,0 +1,180 @@
+# Internal Medicine
+amlodipine
+anemia
+atrial fibrillation
+bilirubin
+bradycardia
+bun
+cardiac catheterization
+cbc
+chest pain
+chronic kidney disease
+ckd stage 3
+ckd stage 4
+cmp
+colonoscopy
+congestive heart failure
+copd
+creatinine
+depression screening
+dexa scan
+echocardiogram
+edema
+egfr
+fall risk
+fosamax
+furosemide
+hefpef
+hefref
+hemoglobin a1c
+hydrochlorothiazide
+hyperlipidemia
+hypertension
+insulin
+lisinopril
+liver function tests
+mammogram
+medication adherence
+metformin
+orthopnea
+palpitations
+paroxysmal nocturnal dyspnea
+platelets
+potassium
+prolia
+prostate exam
+shortness of breath
+sodium
+spirometry
+statins
+syncope
+tachycardia
+type 2 diabetes
+wheezing
+white blood cells
+
+# Social Work
+advocacy
+aging parent
+bereavement
+caregiver stress
+case management
+child custody
+detox
+disability benefits
+domestic violence
+financial assistance
+food stamps
+grief counseling
+group home
+guardianship
+homeless outreach
+housing insecurity
+housing voucher
+inpatient treatment
+mental health
+methadone
+naloxone
+psychiatrist
+ptsd
+recovery plan
+relapse
+respite care
+section 8
+shelter
+snap
+sobriety
+social isolation
+social security
+social support
+ssdi
+ssi
+substance use
+supportive housing
+therapy
+transitional housing
+transportation needs
+utility shutoff
+veteran peer support
+veterans benefits
+vocational rehabilitation
+
+# Nursing
+adl
+ambu bag
+bathing assistance
+blood glucose monitoring
+braden scale
+bsn
+call light
+care coordination
+catheter care
+code blue
+discharge planning
+documentation
+dressing change
+fall precautions
+gait assessment
+handoff
+home health
+homemaker homehealth
+hoyer lift
+iadl
+insulin administration
+iv insertion
+lvn
+med education
+med pass
+med reconciliation
+nurse case manager
+ostomy care
+oxygen saturation
+pain scale
+phlebotomy
+pressure ulcer
+report
+rn
+sepsis protocol
+telehealth
+triage
+vital signs
+vte prophylaxis
+wound care
+
+# VHA Terms
+PACT team
+agent orange
+air force
+army
+benefits navigator
+caregiver support
+choice act
+claims process
+coast guard
+combat exposure
+combat veteran
+community care
+compensation and pension
+dd214
+enrollment eligibility
+gulf war
+homemaker homehealth
+marine
+military sexual trauma
+mission act
+my healthevet
+navy
+post 9/11
+purple heart
+service officer
+service-connected
+telehealth
+triwest
+va
+va medical center
+vet center
+veteran
+veterans
+vha
+visn
+vso
