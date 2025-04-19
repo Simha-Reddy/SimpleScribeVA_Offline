@@ -3,29 +3,16 @@ import subprocess
 import time
 import json
 from datetime import datetime
- 
-WHISPER_CPP_PATH = "whispercpp/whisper.exe"
-MODEL_DIR = "whispercpp"
+from vosk import Model, KaldiRecognizer
+import wave
+
+# Load Vosk model once (you can cache this globally if needed)
+VOSK_MODEL_PATH = "vosk-model-en-us-0.22"
+vosk_model = Model(VOSK_MODEL_PATH)
 CHUNK_DIR = "chunks"
 TRANSCRIPT_DIR = "transcripts"
-MODEL_DEFAULT = "ggml-small.en.bin"
-CONFIG_FILE = "config.json"
 LIVE_TRANSCRIPT = "live_transcript.txt"
- 
-def get_model_name():
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r") as f:
-            config = json.load(f)
-            return config.get("model", MODEL_DEFAULT)
-    return MODEL_DEFAULT
- 
-def get_patient_name():
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r") as f:
-            config = json.load(f)
-            return config.get("patient_name", "session")
-    return "session"
- 
+  
 def find_output_path(wav_path):
     path1 = wav_path.replace(".wav", ".txt")
     path2 = wav_path + ".txt"
@@ -34,17 +21,38 @@ def find_output_path(wav_path):
     elif os.path.exists(path2):
         return path2
     return None
- 
-def transcribe_chunk(wav_path, model):
-    cmd = [
-        WHISPER_CPP_PATH,
-        "-m", os.path.join(MODEL_DIR, model),
-        "-f", wav_path,
-        "-otxt"
-    ]
-    print(f"[INFO] Running: {' '.join(cmd)}")
-    subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return find_output_path(wav_path)
+
+def transcribe_chunk(wav_path, model=None):  # 'model' arg kept for compatibility
+    try:
+        wf = wave.open(wav_path, "rb")
+    except Exception as e:
+        print(f"[ERROR] Cannot open WAV file {wav_path}: {e}")
+        return None
+
+    if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getframerate() != 16000:
+        print(f"[ERROR] WAV file {wav_path} must be 16-bit mono PCM at 16kHz")
+        return None
+
+    rec = KaldiRecognizer(vosk_model, wf.getframerate())
+    text = ""
+
+    while True:
+        data = wf.readframes(4000)
+        if len(data) == 0:
+            break
+        if rec.AcceptWaveform(data):
+            res = json.loads(rec.Result())
+            text += res.get("text", "") + " "
+
+    final_res = json.loads(rec.FinalResult())
+    text += final_res.get("text", "")
+
+    # Simulate Whisper-style .txt output
+    output_path = wav_path + ".txt"
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(text.strip())
+
+    return output_path
  
 def append_to_transcripts(text, patient_name):
     with open(LIVE_TRANSCRIPT, "a", encoding="utf-8") as f:
