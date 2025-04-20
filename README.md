@@ -50,6 +50,9 @@ It allows clinicians to transcribe audio (dictations or patient visits) entirely
 - Double-click `Setup.bat` in the folder  
   - This creates a virtual environment and installs required packages  
   - May take a few minutes
+- For Macs, put this in Terminal: chmod +x Setup.sh StartSimpleScribeVA.sh
+  - then run once: ./setup.sh
+  - then run each time: ./StartSimpleScribeVA.sh
 
 ### Step 5: Daily Use
 - After setup, launch the app anytime by double-clicking:  
