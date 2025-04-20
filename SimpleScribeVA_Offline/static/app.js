@@ -142,9 +142,21 @@ function copyFullContent() {
     const transcript = document.getElementById("rawTranscript").value || "";
     const chartData = document.getElementById("chartData").value || "";
 
-    const full = `PROMPT:\n${prompt}\n\nTRANSCRIPT:\n${transcript}\n\nCHART DATA:\n${chartData}`;
+    const fullContent = `${prompt}
+
+	---
+	
+	## 📋 CHART DATA
+	${chartData}
+	
+	---
+	
+	## 🎙️ TRANSCRIPT
+	${transcript}
+	`;
+	
     navigator.clipboard.writeText(full).then(() => {
-        alert("Prompt, transcript, and chart data copied.");
+        alert("Prompt, transcript, and chart data copied with Markdown formatting.");
     });
 }
 
