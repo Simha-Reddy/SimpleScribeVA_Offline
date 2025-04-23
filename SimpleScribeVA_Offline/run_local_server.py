@@ -153,7 +153,7 @@ def save_template():
             name += ".txt"
         with open(os.path.join("templates/custom", name), "w", encoding="utf-8") as f:
             f.write(text)
-        return redirect(url_for("scribe"))
+        return redirect(url_for("settings"))
     return "Invalid data", 400
 
 @app.route("/load_template/<name>")

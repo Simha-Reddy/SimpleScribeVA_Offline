@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SimpleScribeVA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e5ecf3;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 950px;
+            margin: auto;
+            background: #ffffffee;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px 35px;
+        }
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title {
+            font-size: 2.8em;
+            font-style: italic;
+            font-weight: 600;
+            color: #2ecc71;
+        }
+        .right-controls {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+        a {
+            text-decoration: none;
+            color: #3498db;
+            font-size: 2em;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            border: 2px solid #2ecc71;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            background-color: white;
+            color: #2ecc71;
+            font-weight: 600;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        button:hover {
+            background-color: #2ecc71;
+            color: white;
+        }
+        button:active {
+            background-color: #27ae60;
+            border-color: #27ae60;
+        }
+
+        .start {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .stop {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0 0;
+        }
+        textarea {
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #bbb;
+            background-color: #fefefe;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        #rawTranscript {
+            min-height: 300px;
+        }
+		#rawTranscript {
+			min-height: 300px;
+			border: 1px solid #bbb;
+			border-radius: 10px;
+			background-color: #fefefe;
+			font-family: 'Courier New', monospace;
+			font-size: 1em;
+			padding: 14px;
+			box-sizing: border-box;
+			white-space: pre-wrap;
+			overflow-wrap: break-word;
+		}
+        #chartData {
+            min-height: 180px;
+        }
+        #promptPreview {
+            min-height: 300px;
+        }
+        select {
+            font-size: 1em;
+            padding: 12px;
+			margin-bottom: 20px;
+            border-radius: 8px;
+            width: 100%;
+            border: 1px solid #bbb;
+            background-color: #fbfbfb;
+        }
+        h2 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 6px;
+            margin-top: 35px;
+            color: #2c3e50;
+        }
+        .note-controls {
+            margin-top: 10px;
+        }
+        .button-row {
+            margin-top: 10px;
+        }
+    
+        .danger-button {
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+        }
+        .danger-button:hover {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .danger-button:active {
+            background-color: #c0392b;
+            border-color: #c0392b;
+        }
+
+        .start-button {
+            border: 2px solid #2ecc71;
+            background-color: #2ecc71;
+            color: white;
+	    margin-right: 12px;
+        }
+        .start-button:hover {
+            background-color: #27ae60;
+        }
+
+        .stop-button {
+            border: 2px solid #e74c3c;
+            background-color: #e74c3c;
+            color: white;
+	    margin-right: 12px;
+        }
+        .stop-button:hover {
+            background-color: #c0392b;
+        }
+
+		.low-confidence {
+			background-color: #fff4d6;
+			border-radius: 4px;
+			padding: 1px 3px;
+			font-style: italic;
+		}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <a href="/" class="header-title">SimpleScribeVA</a>
+            <div class="right-controls">
+                <a href="/archive" title="Transcripts">📁</a>
+                <a href="/settings" title="Settings">⚙️</a>
+            </div>
+        </div>
+
+        <div class="top-bar">
+            <div>
+                <button id="recordBtn" class="start-button" class="start" onclick="toggleRecording()">Start Recording</button>
+                <button id="endSessionBtn" class="danger-button">End Session</button>
+            </div>
+        </div>
+
+        <h2>Transcript</h2>
+		<div id="rawTranscript" contenteditable="true" placeholder="Transcription will appear here..."></div>
+
+		<div id="statusIndicator" style="margin-top: 8px; font-style: italic; color: gray;"></div>
+
+        <h2>Optional Chart Data</h2>
+        <textarea id="chartData" placeholder="Paste any relevant chart information here..."></textarea>
+
+        <h2>Choose Prompt Template</h2>
+        <select id="promptSelector">
+            {% for prompt in prompt_templates %}
+                <option value="{{ prompt }}">{{ prompt }}</option>
+            {% endfor %}
+        </select>
+
+		<textarea id="promptPreview" placeholder="The selected prompt will appear here..."></textarea>
+		<div class="button-row">
+			<button style="margin-right: 12px;" onclick="copyFullContent()">Copy Prompt / Transcript / Chart Data</button>
+			<button onclick="copyTranscriptOnly()">Copy Transcript Only</button>
+		</div>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>
