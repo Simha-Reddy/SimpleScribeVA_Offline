@@ -117,6 +117,8 @@ function loadPrompts() {
             const selector = document.getElementById("promptSelector");
             selector.innerHTML = "";
 
+            const lastSelected = localStorage.getItem("lastPrompt");
+
             for (let name in data) {
                 const opt = document.createElement("option");
                 opt.value = name;
@@ -124,35 +126,73 @@ function loadPrompts() {
                 selector.appendChild(opt);
             }
 
-            // When a user changes selection, update preview
+            // If a previous selection exists and is still available
+            if (lastSelected && data[lastSelected]) {
+                selector.value = lastSelected;
+                document.getElementById("promptPreview").value = data[lastSelected];
+            } else if (selector.value) {
+                document.getElementById("promptPreview").value = data[selector.value] || "";
+            }
+
             selector.addEventListener("change", () => {
                 const selected = selector.value;
                 document.getElementById("promptPreview").value = data[selected] || "";
+                localStorage.setItem("lastPrompt", selected);  // ✅ Save user's last choice
             });
-
-            // Automatically load preview of the first option
-            if (selector.value) {
-                document.getElementById("promptPreview").value = data[selector.value] || "";
-            }
         });
 }
 
+
 function copyFullContent() {
     const prompt = document.getElementById("promptPreview").value || "";
-    const transcript = document.getElementById("rawTranscript").value || "";
     const chartData = document.getElementById("chartData").value || "";
 
-    const full = `PROMPT:\n${prompt}\n\nTRANSCRIPT:\n${transcript}\n\nCHART DATA:\n${chartData}`;
-    navigator.clipboard.writeText(full).then(() => {
-        alert("Prompt, transcript, and chart data copied.");
+    const rawDiv = document.getElementById("rawTranscript");
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(rawDiv);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    // Create a temporary element for clean text extraction
+    const temp = document.createElement("div");
+    temp.innerHTML = rawDiv.innerHTML;
+    const textOnlyTranscript = temp.textContent || temp.innerText || "";
+
+    const fullContent = `${prompt}
+
+	---
+	
+	## 📋 CHART DATA
+	${chartData}
+	
+	---
+	
+	## 🎙️ TRANSCRIPT
+	${textOnlyTranscript}
+	`;
+	
+    navigator.clipboard.writeText(fullContent).then(() => {
+        alert("Prompt, transcript, and chart data copied with Markdown formatting.");
     });
 }
 
 function copyTranscriptOnly() {
-    const transcript = document.getElementById("rawTranscript").value || "";
-    navigator.clipboard.writeText(transcript).then(() => {
-        alert("Transcript copied.");
-    });
+    const rawDiv = document.getElementById("rawTranscript");
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(rawDiv);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    // Create a temporary element for clean text extraction
+    const temp = document.createElement("div");
+    temp.innerHTML = rawDiv.innerHTML;
+    const textOnlyTranscript = temp.textContent || temp.innerText || "";
+
+    navigator.clipboard.writeText(textOnlyTranscript)
+        .then(() => alert("Transcript copied to clipboard."))
+        .catch(err => console.error("Clipboard error:", err));
 }
 
 function saveModelConfig() {
@@ -185,27 +225,53 @@ function pollScribeStatus() {
     fetch('/scribe_status')
         .then(response => response.json())
         .then(data => {
-            const transcriptBox = document.getElementById('rawTranscript');
-            if (transcriptBox) {
-                transcriptBox.value = data.transcript;
-                transcriptBox.scrollTop = transcriptBox.scrollHeight;  // ✅ auto-scroll
+            const statusEl = document.getElementById('statusIndicator');
+
+            if (transcriptBox && !userIsEditing) {
+                transcriptBox.innerHTML = data.transcript;
+
+                if (autoScrollEnabled) {
+                    transcriptBox.scrollTop = transcriptBox.scrollHeight;
+                }
             }
 
-            const statusEl = document.getElementById('statusIndicator');
             if (statusEl) {
-				if (isRecording()) {
-					statusEl.textContent = "Recording...";
-				} else if (data.pending_chunks > 0) {
-					statusEl.textContent = "Transcribing...";
-				} else {
-					statusEl.textContent = "";
-				}
+                if (isRecording()) {
+                    statusEl.textContent = "Recording...";
+                } else if (data.pending_chunks > 0) {
+                    statusEl.textContent = "Transcribing...";
+                } else {
+                    statusEl.textContent = "";
+                }
             }
         })
         .catch(err => console.error("Error polling scribe status:", err));
 }
 
 setInterval(pollScribeStatus, 3000);
+
+let userIsEditing = false;
+let autoScrollEnabled = true;
+let editTimer = null;
+
+const transcriptBox = document.getElementById("rawTranscript");
+
+if (transcriptBox) {
+    // Track when user types
+    transcriptBox.addEventListener("input", () => {
+        userIsEditing = true;
+        clearTimeout(editTimer);
+        editTimer = setTimeout(() => {
+            userIsEditing = false;
+        }, 3000); // resume after 3 seconds of no typing
+    });
+
+    // Track manual scroll to disable autoscroll
+    transcriptBox.addEventListener("scroll", () => {
+        const nearBottom = transcriptBox.scrollHeight - transcriptBox.scrollTop - transcriptBox.clientHeight < 10;
+        autoScrollEnabled = nearBottom;
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     const endSessionBtn = document.getElementById("endSessionBtn");
@@ -291,6 +357,7 @@ function loadCustomTemplateList() {
 				textarea.rows = 10;
                 const saveBtn = document.createElement("button");
                 saveBtn.textContent = "Save";
+				saveBtn.style.marginRight = "12px";
                 const deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Delete";
 

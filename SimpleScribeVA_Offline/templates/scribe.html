@@ -27,7 +27,7 @@
             font-size: 2.8em;
             font-style: italic;
             font-weight: 600;
-            color: #2c3e50;
+            color: #2ecc71;
         }
         .right-controls {
             display: flex;
@@ -37,7 +37,7 @@
         a {
             text-decoration: none;
             color: #3498db;
-            font-size: 1.4em;
+            font-size: 2em;
         }
         a:hover {
             text-decoration: underline;
@@ -76,7 +76,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 30px 0 20px;
+            margin: 30px 0 0;
         }
         textarea {
             width: 100%;
@@ -92,6 +92,18 @@
         #rawTranscript {
             min-height: 300px;
         }
+		#rawTranscript {
+			min-height: 300px;
+			border: 1px solid #bbb;
+			border-radius: 10px;
+			background-color: #fefefe;
+			font-family: 'Courier New', monospace;
+			font-size: 1em;
+			padding: 14px;
+			box-sizing: border-box;
+			white-space: pre-wrap;
+			overflow-wrap: break-word;
+		}
         #chartData {
             min-height: 180px;
         }
@@ -133,11 +145,11 @@
             border-color: #c0392b;
         }
 
-
         .start-button {
             border: 2px solid #2ecc71;
             background-color: #2ecc71;
             color: white;
+	    margin-right: 12px;
         }
         .start-button:hover {
             background-color: #27ae60;
@@ -147,10 +159,18 @@
             border: 2px solid #e74c3c;
             background-color: #e74c3c;
             color: white;
+	    margin-right: 12px;
         }
         .stop-button:hover {
             background-color: #c0392b;
         }
+
+		.low-confidence {
+			background-color: #fff4d6;
+			border-radius: 4px;
+			padding: 1px 3px;
+			font-style: italic;
+		}
 
 </style>
 </head>
@@ -172,7 +192,7 @@
         </div>
 
         <h2>Transcript</h2>
-        <textarea id="rawTranscript" placeholder="Transcription will appear here..."></textarea>
+		<div id="rawTranscript" contenteditable="true" placeholder="Transcription will appear here..."></div>
 
 		<div id="statusIndicator" style="margin-top: 8px; font-style: italic; color: gray;"></div>
 

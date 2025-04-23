@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Settings - SimpleScribeVA</title>
+    <title>Transcript Archive - SimpleScribeVA</title>
     
     <style>
         body {
@@ -24,27 +24,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 60px;
         }
         .header-title {
             font-size: 2.8em;
             font-style: italic;
             font-weight: 600;
-            color: #2ecc71;
+            color: #2c3e50;
         }
         a {
             text-decoration: none;
             color: #3498db;
-            font-size: 2em;
+            font-size: 1.4em;
         }
         button {
             padding: 12px 24px;
             font-size: 1em;
             border: 2px solid #2ecc71;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             margin-top: 20px;
-	    margin-bottom: 20px;
             background-color: white;
             color: #2ecc71;
             font-weight: 600;
@@ -58,18 +56,8 @@
             background-color: #27ae60;
             border-color: #27ae60;
         }
-	input[type="text"] {
-    	    width: 50%;
-    	    padding: 10px;
-   	    border-radius: 10px;
-    	    border: 1px solid #bbb;
-    	    background-color: #fefefe;
-	    font-size: 1em;
-	    box-sizing: border-box;
-	}
         textarea {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	    width: 100%;
+            width: 100%;
             padding: 14px;
             border-radius: 10px;
             border: 1px solid #bbb;
@@ -93,6 +81,19 @@
             font-weight: bold;
             margin-bottom: 6px;
         }
+    
+        .danger-button {
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+        }
+        .danger-button:hover {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .danger-button:active {
+            background-color: #c0392b;
+            border-color: #c0392b;
+        }
     </style>
 
 </head>
@@ -100,30 +101,27 @@
     <div class="container">
         <div class="header-bar">
             <div class="header-title">SimpleScribeVA</div>
-            <div class="right-controls">
-                <a href="/scribe" title="Back to Scribe">📝</a>
-                <a href="/archive" title="Archive">📁</a>
-            </div>
+            <a href="/scribe">← Back to Scribe</a>
         </div>
-<!--        <h2>Settings</h2>
-        <label for="modelSelector">Select Whisper Model:</label>
-        <select id="modelSelector">
-            <option value="small"> small (slower, more accurate) </option>
-            <option value="tiny"> tiny (faster, less accurate) </option>
-        </select><br><br>
+        <h2>Transcript Archive</h2>
+        <form method="POST" action="/delete_transcripts">
+            <button type="submit" class="danger-button">Delete Selected</button><br><br>
+            <label><input type="checkbox" id="selectAll" onclick="toggleAll(this)"> Select All</label>
+            
+            {% for filename, content in transcripts %}
+            <div class="transcript">
+                <label>
+                    <input type="checkbox" name="delete" value="{{ filename }}">
+                    <span class="transcript-title">{{ filename }}</span>
+                </label>
+                <details>
+                    <summary>View Transcript</summary>
+                    <pre>{{ content }}</pre>
+                </details>
+            </div>
+            {% endfor %}
 
-        <button onclick="saveModelConfig()">Save Settings</button>
--->
-
-        <h2>Create a Custom Prompt Template</h2>
-        <input type="text" id="customTemplateName" placeholder="Template name"><br><br>
-        <textarea id="customTemplateText" placeholder="Enter your custom prompt here..." rows="10"></textarea><br>
-        <button onclick="saveCustomTemplate()">Save Template</button>
-
-	<hr>
-	<h3>Saved Custom Templates</h3>
-	<ul id="customTemplateList" style="list-style: none; padding: 0;"></ul>
-
+        </form>
     </div>
     <script src="/static/app.js"></script>
 </body>

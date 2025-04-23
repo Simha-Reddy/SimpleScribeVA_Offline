@@ -1,14 +1,15 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory, render_template
 from dotenv import load_dotenv
 load_dotenv()
 import os
 import json
 import threading
 from record_audio import start_recording_thread, stop_recording
+from datetime import datetime
 
 # Ensure required folders exist
 REQUIRED_DIRS = [
-    "chunks",  # chunks of audio, length in record_audio
+    "chunks",
     "transcripts",
     os.path.join("templates", "default"),
     os.path.join("templates", "custom"),
@@ -17,7 +18,7 @@ REQUIRED_DIRS = [
 
 for folder in REQUIRED_DIRS:
     os.makedirs(folder, exist_ok=True)
-    
+
 app = Flask(__name__)
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -52,24 +53,20 @@ def scribe():
     custom_templates = []
 
     if os.path.exists(default_dir):
-        default_templates = [f[:-4] for f in os.listdir(default_dir) if f.endswith(".txt")]
+        default_templates = [os.path.splitext(f)[0] for f in os.listdir(default_dir) if f.endswith((".txt", ".md"))]
     if os.path.exists(custom_dir):
-        custom_templates = [f[:-4] for f in os.listdir(custom_dir) if f.endswith(".txt")]
+        custom_templates = [os.path.splitext(f)[0] for f in os.listdir(custom_dir) if f.endswith((".txt", ".md"))]
 
     return render_template("scribe.html", default_templates=default_templates, custom_templates=custom_templates)
 
 @app.route("/scribe_status")
 def scribe_status():
-    import os
-
     chunk_dir = "chunks"
     wavs = [f for f in os.listdir(chunk_dir) if f.endswith(".wav")]
     txts = [f for f in os.listdir(chunk_dir) if f.endswith(".txt")]
-
     txt_basenames = {os.path.splitext(f)[0] for f in txts}
     pending = [f for f in wavs if os.path.splitext(f)[0] not in txt_basenames]
 
-    # Read live transcript
     transcript_path = "live_transcript.txt"
     try:
         with open(transcript_path, "r") as f:
@@ -90,17 +87,37 @@ def settings():
 @app.route("/archive")
 def archive():
     transcripts = []
-    if os.path.exists("transcripts"):
-        for f in sorted(os.listdir("transcripts")):
-            path = os.path.join("transcripts", f)
+    transcript_dir = "transcripts"
+
+    if os.path.exists(transcript_dir):
+        files = sorted(os.listdir(transcript_dir), reverse=True)
+
+        for f in files:
+            path = os.path.join(transcript_dir, f)
             with open(path, "r", encoding="utf-8") as file:
                 content = file.read()
-            transcripts.append((f, content))
+
+            # Try to parse timestamp from filename
+            try:
+                base = os.path.splitext(f)[0]  # remove .txt
+                ts = base.replace("session_", "")  # e.g., "20250422_1119"
+                dt = datetime.strptime(ts, "%Y%m%d_%H%M")
+                readable_time = dt.strftime("%B %d, %Y at %I:%M %p")  # "April 22, 2025 at 11:19 AM"
+            except Exception:
+                readable_time = f  # fallback to filename
+
+            transcripts.append({
+                "filename": f,
+                "display_time": readable_time,
+                "content": content
+            })
+
     return render_template("archive.html", transcripts=transcripts)
+
 
 @app.route("/delete_transcripts", methods=["POST"])
 def delete_transcripts():
-    filenames = request.form.getlist("delete")
+    filenames = request.form.getlist("filenames")
     for fname in filenames:
         path = os.path.join("transcripts", fname)
         if os.path.exists(path):
@@ -113,11 +130,8 @@ def save_config():
     with open("config.json", "w") as f:
         json.dump(data, f)
 
-    # Automatically restart transcribe_chunks.py
     import psutil
     import subprocess
-
-    # Kill any existing transcribe_chunks.py processes
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
         try:
             if proc.info['cmdline'] and "transcribe_chunks.py" in proc.info['cmdline'][-1]:
@@ -125,11 +139,8 @@ def save_config():
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
 
-    # Start a new one
     subprocess.Popen(["python", "transcribe_chunks.py"])
-
     return "", 204
-
 
 @app.route("/save_template", methods=["POST"])
 def save_template():
@@ -138,17 +149,21 @@ def save_template():
     text = data.get("text")
     if name and text:
         os.makedirs("templates/custom", exist_ok=True)
-        with open(os.path.join("templates/custom", f"{name}.txt"), "w", encoding="utf-8") as f:
+        if not name.endswith((".txt", ".md")):
+            name += ".txt"
+        with open(os.path.join("templates/custom", name), "w", encoding="utf-8") as f:
             f.write(text)
         return redirect(url_for("scribe"))
     return "Invalid data", 400
 
 @app.route("/load_template/<name>")
 def load_template(name):
-    path = os.path.join("templates", "custom", f"{name}.txt")
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
+    base = os.path.join("templates", "custom", name)
+    for ext in [".txt", ".md"]:
+        path = base + ext
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
     return "", 404
 
 @app.route("/list_custom_templates")
@@ -156,31 +171,22 @@ def list_custom_templates():
     folder = os.path.join("templates", "custom")
     if not os.path.exists(folder):
         return jsonify([])
-    files = [
-        f.replace(".txt", "")
-        for f in os.listdir(folder)
-        if f.endswith(".txt")
-    ]
+    files = [os.path.splitext(f)[0] for f in os.listdir(folder) if f.endswith((".txt", ".md"))]
     return jsonify(files)
 
 @app.route('/templates/custom/<filename>')
 def serve_custom_template(filename):
-    return send_from_directory('templates/custom',filename)
+    return send_from_directory('templates/custom', filename)
 
 @app.route("/delete_template/<name>", methods=["DELETE"])
 def delete_template(name):
-    path = os.path.join("templates", "custom", f"{name}.txt")
-    if os.path.exists(path):
-        os.remove(path)
-        return "Deleted", 200
+    base = os.path.join("templates", "custom", name)
+    for ext in [".txt", ".md"]:
+        path = base + ext
+        if os.path.exists(path):
+            os.remove(path)
+            return "Deleted", 200
     return "Not found", 404
-
-
-    path = os.path.join("templates", "custom", f"{name}.txt")
-    if os.path.exists(path):
-        os.remove(path)
-        return "Deleted", 200
-    return "File not found", 404
 
 @app.route("/get_prompts")
 def get_prompts():
@@ -190,9 +196,10 @@ def get_prompts():
     for folder in [default_path, custom_path]:
         if os.path.exists(folder):
             for file in os.listdir(folder):
-                if file.endswith(".txt"):
+                if file.endswith((".txt", ".md")):
                     with open(os.path.join(folder, file), "r", encoding="utf-8") as f:
-                        prompts[file.replace(".txt", "")] = f.read()
+                        name = os.path.splitext(file)[0]
+                        prompts[name] = f.read()
     return jsonify(prompts)
 
 @app.route("/create_note", methods=["POST"])
@@ -206,16 +213,20 @@ def create_note():
     openai.api_key = openai_api_key
     prompt_text = ""
     prompt_clean = prompt_type.replace("(Custom) ", "").strip()
-    default_path = os.path.join("templates", "default", f"{prompt_clean}.txt")
-    custom_path = os.path.join("templates", "custom", f"{prompt_clean}.txt")
+    base_default = os.path.join("templates", "default", prompt_clean)
+    base_custom = os.path.join("templates", "custom", prompt_clean)
 
-    if os.path.exists(default_path):
-        with open(default_path, "r", encoding="utf-8") as f:
-            prompt_text = f.read()
-    elif os.path.exists(custom_path):
-        with open(custom_path, "r", encoding="utf-8") as f:
-            prompt_text = f.read()
-    else:
+    for ext in [".txt", ".md"]:
+        if os.path.exists(base_default + ext):
+            with open(base_default + ext, "r", encoding="utf-8") as f:
+                prompt_text = f.read()
+            break
+        elif os.path.exists(base_custom + ext):
+            with open(base_custom + ext, "r", encoding="utf-8") as f:
+                prompt_text = f.read()
+            break
+
+    if not prompt_text:
         return jsonify({"note": f"Prompt template for '{prompt_type}' not found."})
 
     full_prompt = (
@@ -238,6 +249,16 @@ def create_note():
     except Exception as e:
         return jsonify({"note": f"Error generating note: {str(e)}"})
 
+@app.route("/transcription_complete")
+def transcription_complete():
+    # Check for any JSON file corresponding to a final chunk
+    chunk_dir = "chunks"
+    completed_jsons = [
+        f for f in os.listdir(chunk_dir)
+        if f.endswith("_final.wav.json")
+    ]
+    return jsonify({"done": len(completed_jsons) > 0})
+
 @app.route("/end_session", methods=["POST"])
 def end_session():
     from datetime import datetime
@@ -259,7 +280,7 @@ def end_session():
         f.write("")
     if os.path.exists("chunks"):
         for f in os.listdir("chunks"):
-            if f.endswith(".wav") or f.endswith(".txt"):
+            if f.endswith((".wav", ".txt", ".json")):
                 os.remove(os.path.join("chunks", f))
     return "", 204
 
@@ -272,5 +293,3 @@ def shutdown():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
