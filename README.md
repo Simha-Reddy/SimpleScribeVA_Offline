@@ -1,17 +1,14 @@
-# SimpleScribeVA (Offline Version)
+# SimpleScribeVA
 
-**SimpleScribeVA** is a privacy-focused, offline-first tool for virtual medical scribing. This version is intended for use with the secure LLM of your choosing, such as VA GPT beta.
+**⚠️ Warning**: This offline virtual medical scribe, intended to work with the secure, HIPAA-compliant LLM of your choice, **remains unapproved by the VA**. I'm releasing it to allow for testing and feedback.
 
-It allows clinicians to transcribe audio (dictations or patient visits) entirely on their computer using Whisper.cpp, and structure notes using prompt templates like SOAP or H&P.
+**Background**: Virtual medical scribes are rapidly becoming ubiquitous across health care, with both significant potential benefit as well as risk. The benefit of a VA-specific scribe is that it would allow for customization of prompts for professions that are currently underserved in the market (e.g. social workers and nurses), improved focus on Veteran-specific issues and programs like HUD-VASH, and eventual integration with VISTA/CPRS. Most importantly, careful internal testing would allow for rapid feedback and correction on any issues of concern that might arise.
 
-**This offline version does not require an OpenAI API key** — instead of generating notes automatically, users can copy a prompt of your choosing + transcript content (either a dictation or a patient visit) to paste into the **VA GPT Beta** interface.
+**Simplified Instructions**: First, make sure you have Python installed on your computer and that the path to the folder was added during installation. (This is usually a little checkbox during installation. If you're unsure, ask your local tech-savvy friend.) Then go to https://github.com/Simha-Reddy/SimpleScribeVA_Offline/releases/ and scroll down until you see Assets and download the latest .zip file to your desktop. Open the folder and double-click Setup.bat. This will take a few minutes and install whatever you might need. Then whenever you want to use the program, double-click StartSimpleScribeVA.bat, and a browser should open up shortly.
 
-> ⚠️ This repository **does not include the Whisper model** you will need to actually transcribe, due to the large file size of the model. You will need to download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin and save it in the whispercpp folder of this program.
->
-> > **However, release 1.0.0 does include the model and can be found at https://github.com/Simha-Reddy/SimpleScribeVA_Offline/releases/tag/v1.0.0**
+**⚠️ If you decide to use this repository instead of one of the bundled releases, please note that you'll need to download a whisper.cpp model for use. This GitHub depository does not have it due to the large file size of the model. You will need to either download a full zipped release from this site, or download that model (ggml-medium.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-medium.en.bin and save it in the whispercpp folder of this program.
 
-
-> ⚠️ *AS OF THIS WRITING ON 4/16/25, THIS SOFTWARE IS NOT OFFICIALLY ENDORSED BY THE VA. IN ADDITION, PLEASE REVIEW THE INCLUDED LICENSE. IN PARTICULAR, THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*
+> ⚠️ *AS OF THIS WRITING ON 4/22/25, THIS SOFTWARE IS NOT OFFICIALLY ENDORSED BY THE VA. IN ADDITION, PLEASE REVIEW THE INCLUDED LICENSE. IN PARTICULAR, THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*
 
 ---
 
@@ -43,8 +40,8 @@ It allows clinicians to transcribe audio (dictations or patient visits) entirely
   - This ensures your transcripts and custom templates sync across devices
 
 ### Step 3: Download the transcription model
-- If you used the files from this repository, make sure to download the preferred model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
-- **Alternatively, just go to https://github.com/Simha-Reddy/SimpleScribeVA_Offline/releases/tag/v1.0.0 for a release with the model already included.**
+- If you used the files from this repository, make sure to download the preferred model (ggml-medium.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-medium.en.bin or https://huggingface.co/ggerganov/whisper.cpp/tree/main, and save it in the whispercpp folder in the SimpleScribeVA folder. If you decide to use a different Whisper model, save it in the same folder, and open config.json in Notepad and change the model name there to match your model.
+- **Alternatively, just go to https://github.com/Simha-Reddy/SimpleScribeVA_Offline/releases/ for a release with the model already included.**
 
 ### Step 4: First-Time Setup
 - Double-click `Setup.bat` in the folder  
@@ -117,10 +114,8 @@ flask
 python-dotenv
 sounddevice
 scipy
-openai>=1.0.0
 psutil
 Note:
-	•	openai is retained for compatibility but is unused in fallback mode
 	•	scipy is only needed by some sounddevice builds
 
 ---
