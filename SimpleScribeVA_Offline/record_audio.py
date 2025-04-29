@@ -40,8 +40,8 @@ def start_recording():
     recording = True
     device_id = get_device_id()
     samplerate = 16000
-    block_duration = 30 # seconds
-    overlap_seconds = 2 # overlap window to reduce error
+    block_duration = 10 # seconds
+    overlap_seconds = 0.5 # overlap window to reduce error
 
     print(f"[STARTING RECORDING] Using device: {device_id}")
 

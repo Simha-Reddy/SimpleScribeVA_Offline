@@ -3,3 +3,4 @@ python-dotenv
 sounddevice
 scipy
 psutil
+openai

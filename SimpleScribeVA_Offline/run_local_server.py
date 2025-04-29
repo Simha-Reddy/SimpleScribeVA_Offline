@@ -1,11 +1,24 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory, render_template
 from dotenv import load_dotenv
-load_dotenv()
 import os
 import json
 import threading
 from record_audio import start_recording_thread, stop_recording
 from datetime import datetime
+from openai import AzureOpenAI
+
+# Load environment
+load_dotenv()
+openai_api_key = os.getenv("AZURE_OPENAI_API_KEY")
+
+# Initialize Azure OpenAI client
+client = AzureOpenAI(
+    api_key=openai_api_key,
+    api_version="2024-02-15-preview",
+    azure_endpoint="https://spd-prod-openai-va-apim.azure-api.us/api"
+)
+
+app = Flask(__name__)
 
 # Ensure required folders exist
 REQUIRED_DIRS = [
@@ -18,9 +31,6 @@ REQUIRED_DIRS = [
 
 for folder in REQUIRED_DIRS:
     os.makedirs(folder, exist_ok=True)
-
-app = Flask(__name__)
-openai_api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route('/start_recording', methods=['POST'])
 def start_recording_route():
@@ -40,9 +50,79 @@ def live_transcript():
     except FileNotFoundError:
         return "", 200
 
-@app.route("/")
+@app.route("/create_note", methods=["POST"])
+def create_note():
+    data        = request.get_json()
+    transcript  = data.get("transcript", "")
+    chart_data  = data.get("chart_data", "")
+    prompt_text = data.get("prompt_text", "").strip()
+    prompt_type = data.get("prompt_type", "")   # optional: can drop if unused
+
+    # 1) if client gave us a prompt_text, use it; otherwise fallback:
+    if not prompt_text:
+        prompt_clean = prompt_type.replace("(Custom)", "").strip()
+        base_default = os.path.join("templates", "default", prompt_clean)
+        base_custom  = os.path.join("templates", "custom", prompt_clean)
+
+        for ext in [".txt", ".md"]:
+            if os.path.exists(base_default + ext):
+                with open(base_default + ext, "r", encoding="utf-8") as f:
+                    prompt_text = f.read()
+                break
+            elif os.path.exists(base_custom + ext):
+                with open(base_custom + ext, "r", encoding="utf-8") as f:
+                    prompt_text = f.read()
+                break
+
+    if not prompt_text:
+        return jsonify({"note": f"Prompt template for '{prompt_type}' not found."}), 404
+
+    # 2) build the chat messages
+    messages = [
+        {"role": "system", "content": "You are a helpful clinical documentation assistant."},
+        {"role": "user",   "content": prompt_text
+                                + "\n\nCHART DATA:\n" + chart_data.strip()
+                                + "\n\nTRANSCRIPT:\n" + transcript.strip()}
+    ]
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages,
+            temperature=0.5
+        )
+        note = response.choices[0].message.content.strip()
+        # return both for client‐side chatHistory seeding
+        return jsonify({"note": note, "messages": messages})
+    except Exception as e:
+        return jsonify({"note": f"Error generating note: {e}"}), 500
+
+
+
+@app.route('/chat_feedback', methods=['POST'])
+def chat_feedback():
+    # Client sends full message history; server remains stateless
+    data = request.get_json()
+    messages = data.get('messages', [])
+
+    if not messages:
+        return jsonify({'reply': 'No conversation context provided.'}), 400
+
+    try:
+        resp = client.chat.completions.create(
+            model='gpt-4o',
+            messages=messages,
+            temperature=0.5
+        )
+        reply = resp.choices[0].message.content.strip()
+        # Client will append this to its local history
+        return jsonify({'reply': reply})
+    except Exception as e:
+        return jsonify({'reply': f'Error: {str(e)}'}), 500
+
+@app.route('/')
 def index():
-    return render_template("landing.html")
+    return render_template('landing.html')
 
 @app.route("/scribe")
 def scribe():
@@ -202,53 +282,6 @@ def get_prompts():
                         prompts[name] = f.read()
     return jsonify(prompts)
 
-@app.route("/create_note", methods=["POST"])
-def create_note():
-    import openai
-    data = request.get_json()
-    transcript = data.get("transcript", "")
-    chart_data = data.get("chart_data", "")
-    prompt_type = data.get("prompt_type", "")
-
-    openai.api_key = openai_api_key
-    prompt_text = ""
-    prompt_clean = prompt_type.replace("(Custom) ", "").strip()
-    base_default = os.path.join("templates", "default", prompt_clean)
-    base_custom = os.path.join("templates", "custom", prompt_clean)
-
-    for ext in [".txt", ".md"]:
-        if os.path.exists(base_default + ext):
-            with open(base_default + ext, "r", encoding="utf-8") as f:
-                prompt_text = f.read()
-            break
-        elif os.path.exists(base_custom + ext):
-            with open(base_custom + ext, "r", encoding="utf-8") as f:
-                prompt_text = f.read()
-            break
-
-    if not prompt_text:
-        return jsonify({"note": f"Prompt template for '{prompt_type}' not found."})
-
-    full_prompt = (
-        prompt_text.strip() +
-        "\n\nCHART DATA:\n" + chart_data.strip() +
-        "\n\nTRANSCRIPT:\n" + transcript.strip()
-    )
-
-    try:
-        response = openai.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a helpful clinical documentation assistant."},
-                {"role": "user", "content": full_prompt}
-            ],
-            temperature=0.5
-        )
-        note = response.choices[0].message.content.strip()
-        return jsonify({"note": note})
-    except Exception as e:
-        return jsonify({"note": f"Error generating note: {str(e)}"})
-
 @app.route("/transcription_complete")
 def transcription_complete():
     # Check for any JSON file corresponding to a final chunk
@@ -291,5 +324,7 @@ def shutdown():
         shutdown_func()
     return "Server shutting down..."
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    # debug=False and no reloader so this process stays alive
+    app.run(host="127.0.0.1", port=5000,
+            debug=False, use_reloader=False)

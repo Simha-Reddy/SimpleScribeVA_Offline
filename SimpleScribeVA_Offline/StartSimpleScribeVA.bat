@@ -24,7 +24,7 @@ REM === Start Flask server in a minimized window ===
 start /min "" cmd /c python run_local_server.py
 
 REM === Give it a moment to start up ===
-timeout /t 6 > nul
+timeout /t 10 > nul
 
 REM === Open up in default browser ===
 start "" http://127.0.0.1:5000
