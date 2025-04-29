@@ -1,12 +1,12 @@
 # SimpleScribeVA
 
-**⚠️ Warning**: This offline virtual medical scribe, intended to work with the secure, HIPAA-compliant LLM of your choice, **remains unapproved by the VA**. I'm releasing it to allow for testing and feedback.
+**⚠️ Warning**: This virtual medical scribe, intended to work with the secure, HIPAA-compliant LLM of your choice, **remains unapproved by the VA**. I'm releasing it to allow for testing and feedback.
 
-**Background**: Virtual medical scribes are rapidly becoming ubiquitous across health care, with both significant potential benefit as well as risk. The benefit of a VA-specific scribe is that it would allow for customization of prompts for professions that are currently underserved in the market (e.g. social workers and nurses), improved focus on Veteran-specific issues and programs like HUD-VASH, and eventual integration with VISTA/CPRS. Most importantly, careful internal testing would allow for rapid feedback and correction on any issues of concern that might arise.
+**Background**: Virtual medical scribes are rapidly becoming ubiquitous across health care. The benefit of a VA-specific scribe is that it would allow for customization of prompts for professions that are currently underserved in the market (e.g. social workers and nurses), improved focus on Veteran-specific issues and programs like HUD-VASH, and eventual integration with VISTA/CPRS. Most importantly, careful internal testing would allow for rapid feedback.
 
 **Simplified Instructions**: First, make sure you have Python installed on your computer and that the path to the folder was added during installation. (This is usually a little checkbox during installation. If you're unsure, ask your local tech-savvy friend.) Then go to https://github.com/Simha-Reddy/SimpleScribeVA_Offline/releases/ and scroll down until you see Assets and download the latest .zip file to your desktop. Open the folder and double-click Setup.bat. This will take a few minutes and install whatever you might need. Then whenever you want to use the program, double-click StartSimpleScribeVA.bat, and a browser should open up shortly.
 
-**⚠️ If you decide to use this repository instead of one of the bundled releases, please note that you'll need to download a whisper.cpp model for use. This GitHub depository does not have it due to the large file size of the model. You will need to either download a full zipped release from this site, or download that model (ggml-medium.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-medium.en.bin and save it in the whispercpp folder of this program.
+**If you decide to use this repository instead of one of the bundled releases, please note that you'll need to download a whisper.cpp model for use. This GitHub repository does not have the model due to the large file size of the model. You will need to either download a full zipped release from this site, or download that model (ggml-small.en.bin) directly from https://huggingface.co/ggerganov/whisper.cpp/blob/main/ggml-small.en.bin and save it in the whispercpp folder of this program.
 
 > ⚠️ *AS OF THIS WRITING ON 4/22/25, THIS SOFTWARE IS NOT OFFICIALLY ENDORSED BY THE VA. IN ADDITION, PLEASE REVIEW THE INCLUDED LICENSE. IN PARTICULAR, THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*
 
@@ -20,10 +20,11 @@
 - Audio is immediately deleted after transcription  
 - Lets you paste in optional chart data  
 - Lets you select and preview a documentation prompt and save your own custom prompts  
-- Allows you to copy a prompt + transcript + chart data for pasting into the VA GPT Beta  
-- Saves transcripts and templates in a folder that can sync with OneDrive across secure devices  
+- Sends the prompt, chart data and transcript to VA GPT (Azure OpenAI), then provide feedback as needed
+- The feedback input or prompt box can also be used for just communicating directly with VA GPT
+- Saves transcripts and templates in a folder that sync with OneDrive  
 - Prior transcripts can be reviewed and deleted from within the program  
-- Future: Potentially connect directly to VA GPT beta and/or clinical data
+- Future: Connect directly to clinical data
 
 ---
 
@@ -115,6 +116,7 @@ python-dotenv
 sounddevice
 scipy
 psutil
+openai
 Note:
 	•	scipy is only needed by some sounddevice builds
 
@@ -122,16 +124,15 @@ Note:
 
 ## ⚠️ Notes
 
-- Transcripts are not encrypted, so they should be stored in your secure **VA OneDrive** account  
+- Transcripts are not encrypted, so they should be stored in your secure **VA OneDrive** account. 
   (This will occur automatically if the folder lives on your OneDrive desktop)
-- Transcripts can be reviewed and deleted from the **archive page** (click the folder icon in the top-right corner of the app)
+- Transcripts should be reviewed and deleted regularly from the **archive page** (click the folder icon in the top-right corner of the app)
 
 ---
 
 ## 🏠 Designed For
 
 - Clinicians who want to draft notes efficiently using GPT-based tools  
-- Settings where network connectivity or privacy are concerns  
 - VA providers testing GPT Beta workflows
 
 ---
