@@ -28,7 +28,7 @@
             font-size: 2.8em;
             font-style: italic;
             font-weight: 600;
-            color: #2ecc71;
+            color: #3498db;
 	    margin-bottom: 30px;
         }
         .right-controls {
@@ -86,7 +86,7 @@
 <body>
     <div class="container">
         <div class="header-bar">
-            <div class="header-title">SimpleScribeVA</div>
+            <a href="/" class="header-title">SimpleScribeVA</a>
             <div class="right-controls">
                 <a href="/scribe" title="Back to Scribe">📝</a>
                 <a href="/settings" title="Settings">⚙️</a>
@@ -119,7 +119,7 @@
 
     <script>
         function toggleAll(source) {
-            const checkboxes = document.querySelectorAll('input[name="delete"]');
+            const checkboxes = document.querySelectorAll('input[name="filenames"]');
             checkboxes.forEach(cb => cb.checked = source.checked);
         }
     </script>

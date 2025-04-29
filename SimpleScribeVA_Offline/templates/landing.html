@@ -29,7 +29,7 @@
             font-size: 2.8em;
             font-style: italic;
             font-weight: 600;
-            color: #2ecc71;
+            color: #3498db;
         }
         a {
             text-decoration: none;
@@ -39,22 +39,22 @@
         button {
             padding: 12px 24px;
             font-size: 1em;
-            border: 2px solid #2ecc71;
+            border: 2px solid #3498db;
             border-radius: 8px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 40px;
             background-color: white;
-            color: #2ecc71;
+            color: #3498db;
             font-weight: 600;
             transition: background-color 0.2s, color 0.2s;
         }
         button:hover {
-            background-color: #2ecc71;
+            background-color: #3498db;
             color: white;
         }
         button:active {
-            background-color: #27ae60;
-            border-color: #27ae60;
+            background-color: #3498db;
+            border-color: #3498db;
         }
         textarea {
             width: 100%;
@@ -90,12 +90,12 @@
             <div class="header-title">SimpleScribeVA</div>
         </div>
         <h2>Before You Begin</h2>
-        <p>Please confirm that you have obtained <strong>verbal consent</strong> from the patient to transcribe this conversation and to generate a note using AI tools.</p>
+        <p>Please obtain <b>verbal consent</b> to transcribe this conversation and to generate a note using AI tools. Please ensure your patient understands participation is optional, that opting out will not impact their care, and that they can choose to opt-out at any time.</p>
         <form action="/scribe" method="get">
             <div style="margin-bottom: 12px;">
 				<label>
 					<input type="checkbox" id="consentCheckbox" required />
-					I confirm I have obtained verbal consent from the patient and anyone else being transcribed.
+					I confirm I have obtained verbal consent from the patient, and anyone else being transcribed, to use this AI-assisted virtual scribe to assist in documentation. 
 				</label><br>
 				<label>
 			</div>
@@ -103,8 +103,8 @@
 			<div style margin-bottom: 20px;">
 				<label>
 					<input type="checkbox" id="disclaimerCheckbox" required />
-					I understand that <strong>SimpleScribeVA</strong> is a prototype and does not guarantee transcription accuracy.
-					I am responsible for verifying and ensuring the accuracy of any documentation it helps produce.
+					I understand that <strong>SimpleScribeVA</strong> is a product in testing. It does not guarantee transcription or documentation accuracy.
+					I am solely responsible for ensuring the accuracy of any documentation it helps produce.
 				</label><br>
 			</div>
             <button type="submit">Continue to Scribe</button>
