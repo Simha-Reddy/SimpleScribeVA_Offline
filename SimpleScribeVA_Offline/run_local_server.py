@@ -292,6 +292,49 @@ def transcription_complete():
     ]
     return jsonify({"done": len(completed_jsons) > 0})
 
+@app.route("/upload_pdf", methods=["POST"])
+def upload_pdf():
+    """
+    The client should send a POST request with the file in the "pdf" field.
+    The server will save the file temporarily, process it with MarkItDown,
+    and return the converted markdown content.
+    """
+    
+    if not request.files:
+        return jsonify({"error": "No files in request"}), 400
+        
+    if "pdf" not in request.files:
+        return jsonify({"error": "No file part with name 'pdf'"}), 400
+    
+    file = request.files["pdf"]
+
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+    
+    if not file or not file.filename.lower().endswith(".pdf"):
+        return jsonify({"error": "Invalid file type, must be PDF"}), 400
+    
+    try:
+        # Save the file temporarily
+        temp_filepath = os.path.join("temp_pdf")
+        file.save(temp_filepath)
+        
+        try:
+            # Process with MarkItDown using the file path
+            from markitdown import MarkItDown
+            md = MarkItDown(enable_plugins=True)
+            converted_pdf = md.convert(temp_filepath)
+            
+            # Return the result with key "text" to match client expectations
+            return jsonify({"text": converted_pdf.markdown}), 200
+        finally:
+            # Clean up temporary file
+            if os.path.exists(temp_filepath):
+                os.remove(temp_filepath)
+                
+    except Exception as e:
+        return jsonify({"error": "Failed to convert PDF"}), 500
+
 @app.route("/end_session", methods=["POST"])
 def end_session():
     from datetime import datetime

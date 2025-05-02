@@ -380,8 +380,81 @@ if (!endBtn) {
   });
 }
 
-// --- Initialization ---
+function uploadPDF() {
+  const uploadBtn = document.getElementById("uploadPDFBtn");
+  if (!uploadBtn) {
+    console.error("⚠️ uploadPDFBtn not found in DOM!");
+    return;
+  }
+  
+  // Create a file input element
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'application/pdf';
+  fileInput.style.display = 'none';
+  document.body.appendChild(fileInput);
+  
+  // Set up the click handler for the upload button
+  uploadBtn.addEventListener('click', () => {
+    fileInput.click();
+  });
+  
+  // Handle file selection
+  fileInput.addEventListener('change', async (event) => {
+    if (!fileInput.files || fileInput.files.length === 0) return;
+    
+    const file = fileInput.files[0];
+    if (file.type !== 'application/pdf') {
+      alert('Please select a PDF file.');
+      return;
+    }
+    
+    // Show upload in progress
+    uploadBtn.disabled = true;
+    const originalText = uploadBtn.textContent;
+    uploadBtn.textContent = 'Uploading...';
+    
+    // Create FormData and send to server
+    const formData = new FormData();
+    formData.append('pdf', file);
+    
+    try {
+      const response = await fetch('/upload_pdf', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const responseText = await response.text();
+      
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status} ${response.statusText} - ${responseText}`);
+      }
+      
+      let result;
+      try {
+        result = JSON.parse(responseText);
+        alert(`PDF uploaded successfully: ${file.name}`);
+        
+        // If there's a chartData field, append the PDF content to it
+        if (result.text && document.getElementById('chartData')) {
+          document.getElementById('chartData').value += '\n\n' + result.text;
+        }
+      } catch (jsonError) {
+        alert(`Error processing server response`);
+      }
+    } catch (error) {
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = originalText;
+      // Keep fileInput in DOM in case we need to reuse it
+    }
+  });
+}
+
+// Call during initialization
 document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById("promptSelector"))  loadPrompts();
+  if (document.getElementById("promptSelector")) loadPrompts();
   if (document.getElementById("customTemplateList")) loadCustomTemplateList();
+  uploadPDF(); // Initialize PDF upload functionality
 });
