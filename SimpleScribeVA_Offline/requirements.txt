@@ -4,3 +4,4 @@ sounddevice
 scipy
 psutil
 openai
+markitdown[pdf]
